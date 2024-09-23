@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.sql.Array;
+import java.util.Objects;
 
 @Slf4j
 class MessageClientTest {
@@ -38,6 +40,17 @@ class MessageClientTest {
     void constructorTest(){
         Assertions.assertAll(
                 //TODO#2-9 serverAddress is null or serverPort <=0 IllegalArgumentException 발생하는지 검증 합니다.
+                ()->{
+                    Assertions.assertThrows(IllegalArgumentException.class, ()->{
+                       new MessageClient("dd",-1);
+                    });
+                },
+                ()->{
+
+                    Assertions.assertThrows(IllegalArgumentException.class, ()->{
+                        new MessageClient(null, 1);
+                    });
+                }
 
         );
     }
@@ -46,7 +59,9 @@ class MessageClientTest {
     @DisplayName("instance of runnable")
     void instanceOfRunable(){
         //TODO#2-10 MessageClient의 instance가 runnable을 구현했는지 검증 합니다.
+        MessageClient mc = new MessageClient();
 
+        Assertions.assertTrue(mc instanceof Runnable);
     }
 
     @Test
@@ -65,19 +80,23 @@ class MessageClientTest {
         System.setOut(printStream);
 
         //TODO#2-11 MessageClient 객체를 생성하고 시작 합니다.
-        MessageClient messageClient = null;
+        MessageClient messageClient = new MessageClient();
+        Thread thread = new Thread(messageClient);
+        thread.start();
 
 
         //2초 sleep
         Thread.sleep(2000);
 
         //TODO#2-12 System in/out 원래대로 복원 합니다.
+        System.setIn(originalSystemIn);
+        System.setOut(originalSystemOut);
 
 
         log.debug("print-message:{}",testOut.toString());
 
         //TODO#2-13 client에서 "[clinet]recv-message:hello" 출력되었는지 ByteArrayOutputStream testOut을 이용하여 검증 합니다.
-
+        Assertions.assertTrue(testOut.toString().contains("[clinet]recv-message:hello"));
     }
 
     @AfterAll
