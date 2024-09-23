@@ -23,7 +23,8 @@ public interface Response {
            - ex) method 'echo' 인 response를 검증하기 위해서는  echoResponse.validate("echo") == true
            - getMethod()를 이용해서 구현하세요.
          */
-        return false;
+
+        return getMethod().equals(method);
     }
 
 }
