@@ -43,6 +43,18 @@ public class MethodParser {
 
 
 
+
+        String[] s = message.split(" ", 2);
+
+        if(s.length > 0){
+            if(s.length == 1){
+                return new MethodAndValue(s[0], "");
+            }
+            return new MethodAndValue(s[0], s[1]);
+        }
+
+
+
         return null;
     }
 
