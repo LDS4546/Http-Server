@@ -61,6 +61,27 @@ public class PortResponse implements Response {
 
         StringBuilder sb = new StringBuilder();
 
+        Process process = null;
+        try {
+            process = Runtime.getRuntime().exec("lsof -n -i");
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while((line=bufferedReader.readLine())!= null){
+                String[] str = line.split(" +", 9);
+
+                String result = String.format("%s %s %s", str[7], str[8], System.lineSeparator());
+                if(StringUtils.isEmpty(value)){
+                    sb.append(result);
+                }else if(str[8].contains(value) || str[8].startsWith("*")){
+                    sb.append(result);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
         return sb.toString();
     }
 }
