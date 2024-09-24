@@ -22,7 +22,7 @@ public class LoginResponse implements Response {
     @Override
     public String getMethod() {
         //TODO#4-1 method = login 설정 합니다.
-        return "";
+        return "login";
     }
 
     @Override
@@ -38,18 +38,29 @@ public class LoginResponse implements Response {
             ...
         */
 
+        if(value.equals("list")){
+            List<String> list = MessageServer.getClientIds();
+
+            return list.size() > 0 ? String.join(System.lineSeparator(), list) : "empty";
+
+        }
 
         /*TODO#4-3 MessageServer.addClient()를 이용해서 clientMap에 client Socket을 추가 합니다.
             client Socket은 Session을 이용해서 획득할 수 있습니다.
         */
-        boolean loginSuccess = false;
+        boolean loginSuccess = MessageServer.addClient(value, Session.getCurrentSocket());
+
+
 
         /*TODO#4-4 loginSuccess == true 이면 Session.initializeId를 호출해서 현제 clinet의 id를 설정 합니다.
              - login success!를 client에게 반환 합니다.
         */
-
-
         //TODO#4-5 loginSuccess == false이면 "login fail!" 반환 합니다.
-        return "";
+        if(loginSuccess){
+            Session.initializeId(value);
+            return "login success";
+        }
+        return "login fail!";
+
     }
 }
