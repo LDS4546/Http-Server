@@ -41,6 +41,7 @@ public class BroadCastResponse implements Response {
                     MessageServer.removeClient(Session.getCurrentId());
                 }
                 continue;
+
             }
             try {
                 log.debug("id:{},{}",id,client);

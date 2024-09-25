@@ -20,12 +20,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Objects;
 
 public class WhisperResponse implements Response {
     @Override
     public String getMethod() {
         //TODO#2-1 method = "whisper" 반환 합니다.
-        return "";
+        return "whisper";
     }
 
     @Override
@@ -34,9 +35,14 @@ public class WhisperResponse implements Response {
         //method는 whisper, value는 marco hello <-- 입니다.
 
         //TODO#2-2 로기인 되어있지 않다면 "login required!" 반환 합니다.
+        if(!Session.isLogin()){
+            return "login required!";
+        }
 
         //TODO#2-3 value null or "" 이면 "empty message!" 반환 합니다.
-
+        if(Objects.isNull(value) || value.isBlank()){
+            return "empty message!";
+        }
 
         /*TODO#2-4 value 형식이
             {clientId} {message} 아니라면 "empty message!" 반환 합니다.
@@ -44,14 +50,23 @@ public class WhisperResponse implements Response {
             - marco (X)
             -"" (X)
             - marco nice to meet you (O)
-
          */
-
+        String[] str = value.split(" ", 2);
+        if(str.length <= 1){
+            return "empty message!";
+        }
 
         //TODO#2-4 value 가 marco hello 라면 marco아이디를 사용하는 cleint에게 hello message를 응답합니다.
-
+        Socket client = MessageServer.getClientSocket(str[0]);
+        PrintWriter out = null;
+        try {
+            out = new PrintWriter(client.getOutputStream(),true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        out.println(value);
         //TODO#2-5 메시지 전송이 완료되면, "[whisper][marco]" hello 형태로 반환 합니다.
 
-        return "";
+        return String.format("[%s][%s] %s", getMethod(), str[0], str[1]);
     }
 }
